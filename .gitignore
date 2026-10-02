@@ -3,5 +3,3 @@ node_modules/
 !.env.sample
 
 client/
-
-server/src/config/
