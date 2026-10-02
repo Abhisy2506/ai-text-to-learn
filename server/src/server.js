@@ -1,9 +1,18 @@
 import app from "./app.js";
+import dotenv from "dotenv"
+import { connectDB } from "./config/db.js";
 
-try {
-    app.listen(5000, ()=>{
-        console.log(`Backend is listening at Port: ${5000}`)
-    })    
-} catch (error) {
-    console.error(`The process failed with some error: ${error}`)
-}
+
+dotenv.config();
+
+const PORT= process.env.PORT
+
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Backend server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to DB:", err.message);
+  });
