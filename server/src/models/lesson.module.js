@@ -19,7 +19,6 @@ const lessonSchema = new mongoose.Schema(
         trim: true,
       },
     ],
-    // Flexible block-based schema to store heterogeneous content (heading, paragraph, code, video, mcq)
     content: {
       type: [mongoose.Schema.Types.Mixed],
       default: [],
@@ -29,7 +28,7 @@ const lessonSchema = new mongoose.Schema(
       default: false, // Tracks if AI has generated detailed content/audio for this lesson
     },
     audioUrl: {
-      type: String, // Optional URL/Buffer path for Milestone 10 (Hinglish narration)
+      type: String, // Optional (Hinglish narration)
       default: null,
     },
   },

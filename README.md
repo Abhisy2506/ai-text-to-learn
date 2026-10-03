@@ -1,18 +1,22 @@
+Entity Relationship Design (Database schema for Mongoose)
+source: https://canva.link/0obey01wxlsos92
+
+
 # Folders and files structure of the project
 
 text-to-learn/
 ├── .gitignore
 ├── README.md
-├── server/                 # Express + Node.js backend (Render deployment)
-│   ├── config/             # DB connection (db.js)
-│   ├── controllers/        # Request handlers (courseController.js, lessonController.js)
-│   ├── middlewares/        # Auth0 token validation, error handlers
-│   ├── models/             # Mongoose schemas (Course.js, Module.js, Lesson.js)
-│   ├── routes/             # Express routers (api.js, courseRoutes.js)
-│   ├── services/           # Gemini API & YouTube integrations
-│   ├── .env
-│   ├── package.json
-│   └── server.js           # Main Express entry point
+    ├── server/                 # Express + Node.js backend (Render deployment)
+    │   ├── config/             # DB connection (db.js)
+    │   ├── controllers/        # Request handlers (courseController.js, lessonController.js)
+    │   ├── middlewares/        # Auth0 token validation, error handlers
+    │   ├── models/             # Mongoose schemas (Course.js, Module.js, Lesson.js)
+    │   ├── routes/             # Express routers (api.js, courseRoutes.js)
+    │   ├── services/           # Gemini API & YouTube integrations
+    │   ├── .env
+    │   ├── package.json
+    │   └── server.js           # Main Express entry point
 └── client
         /src/
             ├── layouts/
