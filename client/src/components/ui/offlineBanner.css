@@ -1,0 +1,43 @@
+.offline-banner {
+  width: 100%;
+  background-color: rgba(229, 83, 75, 0.12);
+  border-bottom: 1px solid rgba(229, 83, 75, 0.35);
+  color: #ff7b72;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  animation: slideDown 0.25s ease-out;
+  position: relative;
+  z-index: 50;
+}
+
+.offline-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0 auto;
+  max-width: 900px;
+}
+
+.offline-icon {
+  flex-shrink: 0;
+  color: #ff7b72;
+}
+
+.offline-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
