@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 /**
- * Custom hook to track real-time browser network connectivity status.
+ * Custom hook to track rel-time browser network connnectivity status.
  * @returns {{ isOnline: boolean }}
  */
 export default function useNetworkStatus() {
