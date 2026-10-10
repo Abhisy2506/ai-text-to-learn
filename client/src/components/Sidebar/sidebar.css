@@ -1,0 +1,296 @@
+.sidebar-drawer {
+  width: var(--sidebar-width);
+  height: 100%;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, margin-left 0.25s ease;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.sidebar-drawer.closed {
+  margin-left: calc(-1 * var(--sidebar-width));
+}
+
+.sidebar-header {
+  height: var(--header-height);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.brand-icon {
+  color: var(--accent-blue-hover);
+}
+
+.sidebar-action {
+  padding: 14px 16px;
+}
+
+.new-course-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.new-course-btn:hover {
+  background-color: var(--bg-elevated);
+  border-color: var(--border-focus);
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+
+.sidebar-section-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding-left: 8px;
+}
+
+.course-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.course-item-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.course-item-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.course-item-btn.active {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-left: 3px solid var(--accent-blue-hover);
+}
+
+.course-item-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-history-text {
+  padding: 16px 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.75rem;
+  color: var(--text-primary);
+}
+
+/* Update your existing course-item-btn to allow relative positioning */
+.course-item-wrapper {
+  position: relative;
+}
+
+.course-item-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  padding-right: 32px; /* Make room for the 3 dots so text doesn't overlap */
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  text-align: left;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+/* Hover Menu Action Container */
+.course-item-actions {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Show the 3 dots when hovering over the course item, or if the menu is open */
+.course-item-btn:hover .course-item-actions,
+.course-item-actions.force-show {
+  opacity: 1;
+}
+
+.course-options-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+}
+
+.course-options-btn:hover {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+/* The Floating Delete Dropdown */
+.course-dropdown-menu {
+  position: fixed; /* Ignores sidebar overflow constraints */
+  margin: 0;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px var(--shadow-color);
+  padding: 4px;
+  min-width: 140px;
+  z-index: 9999; /* Highest priority to hover over LessonStage */
+  animation: fadeIn 0.15s ease-out;
+  cursor: pointer;
+}
+
+
+.dropdown-action.danger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--danger-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+
+.dropdown-action.danger:hover {
+  background-color: rgba(207, 34, 46, 0.1); /* Soft red hover */
+}
+
+/* --- Delete Confirmation Modal --- */
+.delete-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* Above everything */
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease;
+}
+
+.delete-modal-content {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 10px 40px var(--shadow-color);
+  animation: slideUp 0.2s ease-out;
+}
+
+.delete-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.delete-modal-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.delete-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.delete-cancel-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  transition: all 0.15s ease;
+}
+
+.delete-cancel-btn:hover {
+  background-color: var(--bg-elevated);
+  border-color: var(--text-muted);
+}
+
+.delete-confirm-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: var(--danger-color);
+  border: none;
+  transition: background-color 0.15s ease;
+}
+
+.delete-confirm-btn:hover {
+  background-color: #b31d28; /* Slightly darker red for hover */
+}
+
+@keyframes slideUp {
+  from { transform: translateY(15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
