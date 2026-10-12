@@ -1,0 +1,274 @@
+/* Lesson renderer root file css */
+
+.lesson-renderer-root {
+  width: 100%;
+  color: var(--text-primary, #F0FBF9);
+  line-height: 1.6;
+}
+
+.lesson-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-color, #1A343F);
+}
+
+.lesson-main-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary, #F0FBF9);
+  line-height: 1.25;
+}
+
+.lesson-objectives-card {
+  background: var(--bg-card, #0D1C22);
+  border: 1px solid var(--border-color, #1A343F);
+  border-left: 4px solid var(--accent-blue, #38E1D3);
+  border-radius: var(--radius-md, 10px);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 16px var(--shadow-color, rgba(3, 10, 12, 0.4));
+}
+
+.objectives-title {
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  color: var(--accent-blue, #38E1D3);
+  margin-bottom: 0.85rem;
+}
+
+.objectives-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.objective-item {
+  color: var(--text-secondary, #8DAFB5);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.objective-item::marker {
+  color: var(--accent-color, #FF6B57);
+}
+
+.lesson-content-blocks {
+  display: flex;
+  flex-direction: column;
+}
+
+.empty-content-notice {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--text-muted, #56777E);
+  background: var(--bg-card, #0D1C22);
+  border: 1px dashed var(--border-color, #1A343F);
+  border-radius: var(--radius-md, 10px);
+}
+
+/* Pdf exproter button css */
+
+.pdf-exporter-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pdf-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--bg-card, #0D1C22);
+  border: 1px solid var(--border-color, #1A343F);
+  color: var(--text-secondary, #8DAFB5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pdf-icon-btn:hover:not(:disabled) {
+  border-color: var(--accent-color, #FF6B57);
+  color: var(--accent-color, #FF6B57);
+  background-color: var(--bg-tertiary, #13272F);
+}
+
+.pdf-icon-btn.success {
+  border-color: var(--accent-blue, #38E1D3);
+  color: var(--accent-blue, #38E1D3);
+}
+
+.pdf-icon-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pdf-tooltip {
+  position: absolute;
+  bottom: -32px;
+  right: 50%;
+  transform: translateX(50%) translateY(4px);
+  background-color: var(--bg-elevated, #1D3640);
+  border: 1px solid var(--border-color, #1A343F);
+  color: var(--text-primary, #F0FBF9);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px var(--shadow-color, rgba(0, 0, 0, 0.4));
+  z-index: 50;
+}
+
+.pdf-icon-btn:hover .pdf-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(50%) translateY(0);
+}
+
+.pdf-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 6px;
+  height: 6px;
+  background-color: var(--bg-elevated, #1D3640);
+  border-left: 1px solid var(--border-color, #1A343F);
+  border-top: 1px solid var(--border-color, #1A343F);
+}
+
+/* Off-Screen Print Canvas (Standard A4 format) */
+
+.pdf-print-container {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 794px;
+  min-height: 1123px;
+  padding: 40px;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  font-family: Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.pdf-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.pdf-divider {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 16px 0;
+}
+
+.pdf-objectives-box {
+  background-color: #f3f4f6;
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.pdf-objectives-heading {
+  font-size: 15px;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  color: #1f2937;
+}
+
+.pdf-objectives-list {
+  margin: 0;
+  padding-left: 20px;
+  line-height: 1.6;
+  font-size: 13px;
+  color: #374151;
+}
+
+.pdf-blocks-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pdf-heading {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-top: 16px;
+  margin-bottom: 6px;
+}
+
+.pdf-paragraph {
+  font-size: 13px;
+  line-height: 1.65;
+  color: #374151;
+  margin: 0;
+}
+
+.pdf-code-block {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: monospace;
+  white-space: pre-wrap;
+  overflow-x: hidden;
+  margin: 0;
+}
+
+.pdf-mcq-box {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 14px;
+  margin-top: 8px;
+}
+
+.pdf-mcq-question {
+  font-weight: bold;
+  font-size: 13px;
+  margin: 0 0 10px 0;
+  color: #111827;
+}
+
+.pdf-mcq-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pdf-mcq-option {
+  font-size: 12px;
+  color: #4b5563;
+  font-weight: normal;
+}
+
+.pdf-mcq-option.correct {
+  color: #065f46;
+  font-weight: bold;
+}
+
+.pdf-mcq-explanation {
+  font-size: 11px;
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
