@@ -23,12 +23,23 @@ const lessonSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.Mixed],
       default: [],
     },
+    status: {
+      type: String,
+      enum: ['pending', 'generating', 'completed', 'stopped', 'failed'],
+      default: 'pending',
+      index: true,
+    },
     isEnriched: {
       type: Boolean,
-      default: false, // Tracks if AI has generated detailed content/audio for this lesson
+      default: false,
+    },
+    isGenerationStopped: {
+      type: Boolean,
+      default: false,
+      index: true,
     },
     audioUrl: {
-      type: String, // Optional (Hinglish narration)
+      type: String,
       default: null,
     },
   },
