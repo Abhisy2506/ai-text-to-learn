@@ -1,0 +1,426 @@
+/* Shared Page Container */
+.home-page-container,
+.course-overview-container,
+.lesson-page-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 6rem;
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.home-page-container.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Courses Grid */
+.home-courses-section {
+  margin-top: 3rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title-wrap h2 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.course-count-badge {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.course-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.course-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--card-hover-border);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.course-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.module-badge, .course-tag-pill {
+  font-size: 0.75rem;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.course-card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.course-card-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-card-footer {
+  font-size: 0.8rem;
+  color: var(--accent-blue);
+}
+
+.view-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Empty Courses Card */
+.empty-courses-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  gap: 10px;
+}
+
+.empty-courses-card .empty-icon {
+  color: var(--text-muted);
+}
+
+.empty-courses-card h3 {
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.empty-courses-card p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  max-width: 420px;
+  margin: 0;
+}
+
+/* Breadcrumbs */
+.page-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.crumb-link {
+  background: none;
+  border: none;
+  color: var(--accent-blue);
+  cursor: pointer;
+  padding: 0;
+}
+
+.crumb-link:hover {
+  text-decoration: underline;
+}
+
+.crumb-current {
+  color: var(--text-secondary);
+}
+
+/* Course Overview Hero */
+.course-hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.course-meta-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.syllabus-badge {
+  font-size: 0.75rem;
+  background: var(--info-badge-bg);
+  color: var(--info-badge-text);
+  border: 1px solid var(--info-badge-border);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.course-hero-title {
+  font-size: 1.8rem;
+  margin: 0.75rem 0;
+  color: var(--text-primary);
+}
+
+.course-hero-description {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.start-course-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-color);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 18px;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.start-course-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* Modules & Lessons */
+.module-card {
+  background: var(--bg-subcard);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.module-card-header {
+  background: var(--bg-subcard-header);
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.module-number {
+  font-size: 0.75rem;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.module-title {
+  font-size: 1.1rem;
+  margin: 4px 0 0 0;
+  color: var(--text-primary);
+}
+
+.no-lessons-note {
+  padding: 14px 18px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.lesson-overview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--row-border);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.lesson-overview-row:last-child {
+  border-bottom: none;
+}
+
+.lesson-overview-row:hover {
+  background: var(--row-hover-bg);
+}
+
+.lesson-row-left, .lesson-row-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lesson-row-title {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.status-icon.completed { color: var(--success-text); }
+.status-icon.pending { color: var(--text-muted); }
+
+.status-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.status-badge.ready {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.status-badge.pending {
+  background: var(--badge-bg);
+  color: var(--badge-text);
+}
+
+.status-badge.stopped {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.arrow-icon {
+  color: var(--text-muted);
+}
+
+/* Lesson Page */
+.lesson-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.lesson-content-viewport {
+  width: 100%;
+}
+
+.back-to-course-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--accent-blue);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.back-to-course-btn:hover {
+  text-decoration: underline;
+}
+
+.lesson-bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.seq-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.seq-nav-btn:hover {
+  border-color: var(--card-hover-border);
+  background: var(--row-hover-bg);
+}
+
+.nav-btn-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.btn-direction {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.btn-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Loader & Error States */
+.page-loader-container, .page-error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.page-error-container h2 {
+  color: var(--text-primary);
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  color: var(--text-primary);
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  border-color: var(--card-hover-border);
+}
