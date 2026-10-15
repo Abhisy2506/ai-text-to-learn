@@ -25,7 +25,53 @@ function cleanAndParseJSON(rawText) {
     cleaned = cleaned.slice(firstBrace, lastBrace + 1);
   }
 
-  return JSON.parse(cleaned);
+  // 1. First attempt: standard JSON parse
+  try {
+    const parsed = JSON.parse(cleaned);
+    return Array.isArray(parsed) ? parsed : (parsed.blocks || parsed.content || parsed);
+  } catch (initialError) {
+    console.error(initialError.message);
+  }
+
+  // 2. Second attempt: repair missing commas between objects, trailing commas, and unescaped newlines
+  try {
+    let repaired = cleaned
+      .replace(/\}\s*\{/g, '},{')
+      .replace(/\]\s*\[/g, '],[')
+      .replace(/,\s*([\}\]])/g, '$1');
+
+    // Fix unescaped control characters inside string values
+    repaired = repaired.replace(/"((?:[^"\\]|\\.)*)"/g, (match, str) => {
+      const fixedStr = str
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t');
+      return `"${fixedStr}"`;
+    });
+
+    const parsed = JSON.parse(repaired);
+    return Array.isArray(parsed) ? parsed : (parsed.blocks || parsed.content || parsed);
+  } catch (repairError) {
+    console.error(repairError)
+  }
+
+  // 3. Third attempt: extract any completed block objects individually
+  const extractedBlocks = [];
+  const blockRegex = /\{\s*"type"\s*:\s*"(?:heading|paragraph|code|video|mcq)"[\s\S]*?\}(?=\s*,\s*\{|\s*\]|\s*$)/g;
+  let match;
+  while ((match = blockRegex.exec(cleaned)) !== null) {
+    try {
+      extractedBlocks.push(JSON.parse(match[0]));
+    } catch {
+      console.log("individually unparseable fragment");
+    }
+  }
+
+  if (extractedBlocks.length > 0) {
+    console.warn(`[JSON Recovery] Successfully recovered ${extractedBlocks.length} lesson blocks from malformed output.`);
+    return extractedBlocks;
+  }
+  throw new Error(`Failed to parse AI output into valid JSON blocks`);
 }
 
 /**
@@ -49,7 +95,6 @@ async function callGroqWithRetry(fn, retries = 3, delay = 4000) {
 export const generateCourseOutline = async (topic) => {
   console.log('Generating course outline for:', topic);
 
-  // Strict constraint: Limits output to 4-6 modules, 2-3 lessons each (6-10 lessons total)
   const prompt = `
     You are an expert curriculum designer. Create a concise, high-impact course syllabus for the topic: "${topic}".
     
@@ -88,8 +133,9 @@ export const generateCourseOutline = async (topic) => {
           },
           { role: 'user', content: prompt },
         ],
+        response_format: { type: 'json_object' },
         temperature: 0.2,
-        max_tokens: 1400,
+        max_tokens: 1800,
       });
 
       const rawContent = response.choices[0].message.content;
@@ -114,17 +160,19 @@ export const generateLessonContent = async (courseTitle, lessonTitle, objectives
        - Never place inline bullets (•) on one line. Every bullet point MUST start on a new line with "- ".
        - Leave clean line breaks before and after lists, tables, and blockquotes.
     2. Valid block types are strictly: 'heading', 'paragraph', 'code', 'mcq', and 'video'.
-    3. Output ONLY a valid JSON array. Do not wrap in markdown \`\`\`json code blocks.
-    4. Do NOT include the course title, lesson title, or a 'Learning Objectives' heading/list inside the content blocks. The client UI already renders the title and objectives separately. Begin the content blocks directly with the substantive instructional material.
+    3. Output strictly valid JSON object with a root "blocks" key containing the array of blocks.
+    4. Do NOT include the course title, lesson title, or a 'Learning Objectives' heading/list inside the content blocks. Begin directly with the substantive instructional material.
 
-    Schema:
-    [
-      {"type": "heading", "text": "Section Title"},
-      {"type": "paragraph", "text": "Detailed explanation with clean markdown formatting."},
-      {"type": "code", "language": "javascript", "text": "console.log('example');"},
-      {"type": "mcq", "question": "Question text?", "options": ["A", "B", "C", "D"], "answer": 0, "explanation": "Why option A is correct."},
-      {"type": "video", "query": "YouTube search query"}
-    ]
+    Required JSON Schema:
+    {
+      "blocks": [
+        {"type": "heading", "text": "Section Title"},
+        {"type": "paragraph", "text": "Detailed explanation with clean markdown formatting."},
+        {"type": "code", "language": "javascript", "text": "console.log('example');"},
+        {"type": "mcq", "question": "Question text?", "options": ["A", "B", "C", "D"], "answer": 0, "explanation": "Why option A is correct."},
+        {"type": "video", "query": "YouTube search query"}
+      ]
+    }
   `;
 
   try {
@@ -134,12 +182,13 @@ export const generateLessonContent = async (courseTitle, lessonTitle, objectives
         messages: [
           {
             role: 'system',
-            content: 'You are an educational assistant that strictly outputs a JSON array of lesson blocks with no surrounding text or markdown wrappers.',
+            content: 'You are an educational assistant that strictly outputs valid JSON with a "blocks" array. Never wrap in markdown code fences or conversational text.',
           },
           { role: 'user', content: prompt },
         ],
+        response_format: { type: 'json_object' },
         temperature: 0.2,
-        max_tokens: 2000,
+        max_tokens: 3500,
       });
 
       const rawContent = response.choices[0].message.content;
