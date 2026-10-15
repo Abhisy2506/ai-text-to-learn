@@ -121,31 +121,7 @@ export default function useCourseEnrichment({
         console.error('Auto-enrichment failed for lesson:', targetLessonId, error);
 
         if (isMounted) {
-          // Halt further generation attempts on error
-          setGeneratingCourseId(null);
-
-          // Mark remaining un-enriched lessons in state as stopped
-          setActiveCourse((prevCourse) => {
-            if (!prevCourse || getId(prevCourse) !== activeCourseId) return prevCourse;
-            const updatedModules = prevCourse.modules.map((mod) => ({
-              ...mod,
-              lessons: (mod.lessons || []).map((les) => {
-                const currentId = getId(les);
-                if (isLessonReady(les)) return les;
-
-                return typeof les === 'object' && les !== null
-                  ? { ...les, isEnriched: 'failed', isGenerationStopped: true }
-                  : { _id: currentId, isEnriched: 'failed', isGenerationStopped: true };
-              }),
-            }));
-            return { ...prevCourse, modules: updatedModules };
-          });
-
-          // Notify backend to mark remaining lessons as stopped in the database
-          if (activeCourseId) {
-            const token = await getAccessTokenSilently().catch(() => null);
-            courseRepository.stopCourseLessons(activeCourseId, token).catch(() => {});
-          }
+          await stopEnrichment(activeCourseId);
         }
       }
     };
@@ -170,9 +146,54 @@ export default function useCourseEnrichment({
     setActiveLesson,
   ]);
 
+  const stopEnrichment = async (courseIdToStop = activeCourseId) => {
+    setGeneratingCourseId(null);
+
+    // Immediately mark remaining un-enriched lessons in state as stopped
+    setActiveCourse((prevCourse) => {
+      if (!prevCourse) return prevCourse;
+      const updatedModules = (prevCourse.modules || []).map((mod) => ({
+        ...mod,
+        lessons: (mod.lessons || []).map((les) => {
+          const currentId = getId(les);
+          if (isLessonReady(les)) return les;
+
+          return typeof les === 'object' && les !== null
+            ? { ...les, isEnriched: 'failed', isGenerationStopped: true, status: 'stopped' }
+            : { _id: currentId, isEnriched: 'failed', isGenerationStopped: true, status: 'stopped' };
+        }),
+      }));
+      return { ...prevCourse, modules: updatedModules };
+    });
+
+    // Immediately mark activeLesson as stopped if open and not ready
+    setActiveLesson((prevLesson) => {
+      if (prevLesson && !isLessonReady(prevLesson)) {
+        return {
+          ...prevLesson,
+          isEnriched: 'failed',
+          isGenerationStopped: true,
+          status: 'stopped',
+        };
+      }
+      return prevLesson;
+    });
+
+    // Notify backend in background to persist stopped state
+    if (courseIdToStop) {
+      try {
+        const token = await getAccessTokenSilently().catch(() => null);
+        await courseRepository.stopCourseLessons(courseIdToStop, token);
+      } catch (err) {
+        console.error('Failed to stop course lessons on backend:', err);
+      }
+    }
+  };
+
   return {
     generatingCourseId,
     setGeneratingCourseId,
     generationStatus,
+    stopEnrichment,
   };
 }

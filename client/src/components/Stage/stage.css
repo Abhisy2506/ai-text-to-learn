@@ -66,8 +66,9 @@
 
 /* Loading Spinner */
 .queue-spinner {
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-top: 2px solid var(--accent-blue, #2563eb);
   border-radius: 50%;
+  border-style: solid;
+  border-color: var(--spinner-track, rgba(255, 107, 87, 0.15));
+  border-top-color: var(--accent-color, #FF6B57);
   animation: spin 1s linear infinite;
 }

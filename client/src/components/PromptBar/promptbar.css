@@ -33,13 +33,35 @@
   color: var(--success-text);
 }
 
-.queue-spinner {
+.queue-status-bar .queue-spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid var(--spinner-track);
-  border-top: 2px solid var(--accent-blue);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  border-width: 2px;
+  flex-shrink: 0;
+}
+
+.queue-status-text {
+  flex: 1;
+}
+
+.queue-stop-btn {
+  margin-left: auto;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #ef4444;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.2;
+}
+
+.queue-stop-btn:hover {
+  background: rgba(239, 68, 68, 0.28);
+  border-color: #ef4444;
+  color: #ff6b6b;
 }
 
 .chat-input-form {

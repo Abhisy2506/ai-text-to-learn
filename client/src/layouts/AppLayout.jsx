@@ -13,8 +13,6 @@ export default function AppLayout() {
   const location = useLocation();
 
   const { 
-    isLoading, 
-    isGenerating, 
     isOnline,
     generatingCourseId,
     activeCourse,
@@ -39,11 +37,6 @@ export default function AppLayout() {
 
       <div className="main-viewport">
         <OfflineBanner isOnline={isOnline} />
-
-        {/* Global Loading Bar - removed isGenerationStopped check */}
-        {isLoading && !isGenerating && (
-          <div className="global-loading-bar" />
-        )}
 
         <Header
           isSidebarOpen={isSidebarOpen}

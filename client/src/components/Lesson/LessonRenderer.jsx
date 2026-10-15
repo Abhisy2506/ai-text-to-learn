@@ -62,7 +62,7 @@ export default function LessonRenderer({ lesson }) {
           </div>
         ) : (
           <div className="empty-content-notice">
-            <Loader2 className="spinner" size={20} />
+            <Loader2 className="spinner" size={25} color="var(--accent-color)"/>
             <span>Lesson material is being formulated...</span>
           </div>
         )}

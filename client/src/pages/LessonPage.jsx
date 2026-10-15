@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 import courseRepository from '../services/courseRepository';
 import LessonRenderer from '../components/Lesson/LessonRenderer';
 import LessonPDFExporter from '../components/Lesson/LessonPDFExporter';
 import { useCourse } from '../context/CourseContext';
-import { getId } from '../utils/courseUtils';
+import { getId, isLessonStopped } from '../utils/courseUtils';
 import './pages.css';
 
 export default function LessonPage() {
@@ -16,6 +16,9 @@ export default function LessonPage() {
   const [lesson, setLesson] = useState(null);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const activeCourseRef = useRef(activeCourse);
+  activeCourseRef.current = activeCourse;
 
   // Keep in sync with background enrichment updates from CourseContext
   const currentLesson =
@@ -35,11 +38,16 @@ export default function LessonPage() {
           setLesson(lessonData);
           setActiveLesson(lessonData);
 
-          const parentCourseId = lessonData?.courseId || lessonData?.course || getId(activeCourse);
+          const currentActiveCourse = activeCourseRef.current;
+          const parentCourseId =
+            lessonData?.courseId ||
+            lessonData?.course ||
+            getId(currentActiveCourse);
+
           if (parentCourseId) {
             const courseData =
-              getId(activeCourse) === parentCourseId
-                ? activeCourse
+              getId(currentActiveCourse) === parentCourseId
+                ? currentActiveCourse
                 : await courseRepository.getCourse(parentCourseId);
             setCourse(courseData);
           }
@@ -58,14 +66,19 @@ export default function LessonPage() {
     return () => {
       isMounted = false;
     };
-  }, [lessonId, activeCourse, setActiveLesson]);
+  }, [lessonId, setActiveLesson]);
 
-  const targetCourseId = getId(course) || getId(activeCourse);
+  const displayCourse =
+    activeCourse && (getId(activeCourse) === getId(course) || !course)
+      ? activeCourse
+      : course || activeCourse;
+
+  const targetCourseId = getId(displayCourse);
 
   if (loading) {
     return (
       <div className="page-loader-container">
-        <Loader2 className="spinner" size={32} />
+        <Loader2 className="spinner" size={32} style={{ color: 'var(--accent-color)' }} />
         <p>Loading lesson content...</p>
       </div>
     );
@@ -88,8 +101,8 @@ export default function LessonPage() {
   }
 
   const flatLessons = [];
-  if (course?.modules) {
-    for (const mod of course.modules) {
+  if (displayCourse?.modules) {
+    for (const mod of displayCourse.modules) {
       for (const les of mod.lessons || []) {
         flatLessons.push(typeof les === 'object' ? les : { _id: les });
       }
@@ -97,6 +110,16 @@ export default function LessonPage() {
   }
 
   const currentIndex = flatLessons.findIndex((l) => getId(l) === lessonId);
+  const lessonInCourse = currentIndex !== -1 ? flatLessons[currentIndex] : null;
+  const isStoppedInCourse = lessonInCourse ? isLessonStopped(lessonInCourse) : false;
+
+  const effectiveLesson = currentLesson
+    ? {
+        ...currentLesson,
+        ...(isStoppedInCourse ? { isGenerationStopped: true, status: 'stopped', isEnriched: 'failed' } : {}),
+      }
+    : null;
+
   const prevLesson = currentIndex > 0 ? flatLessons[currentIndex - 1] : null;
   const nextLesson =
     currentIndex !== -1 && currentIndex < flatLessons.length - 1
@@ -115,12 +138,12 @@ export default function LessonPage() {
         </button>
 
         <div className="top-actions-right">
-          <LessonPDFExporter lesson={currentLesson} />
+          <LessonPDFExporter lesson={effectiveLesson} />
         </div>
       </div>
 
       <main className="lesson-content-viewport">
-        <LessonRenderer lesson={currentLesson} />
+        <LessonRenderer lesson={effectiveLesson} />
       </main>
 
       <footer className="lesson-bottom-nav">

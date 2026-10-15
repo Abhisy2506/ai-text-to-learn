@@ -18,24 +18,29 @@ import './pages.css';
 export default function CourseOverviewPage() {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const { activeCourse, setActiveCourse } = useCourse();
+  const { activeCourse, setActiveCourse, onNewCourse } = useCourse();
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Keep in sync with background enrichment updates from CourseContext
+  const currentCourse =
+    activeCourse && getId(activeCourse) === courseId
+      ? activeCourse
+      : course;
 
   useEffect(() => {
     let isMounted = true;
 
     const loadCourse = async () => {
       try {
-        setLoading(true);
-        // If activeCourse in context matches this route, use it immediately
         if (activeCourse && getId(activeCourse) === courseId) {
           setCourse(activeCourse);
           setLoading(false);
           return;
         }
 
+        setLoading(true);
         const data = await courseRepository.getCourse(courseId);
         if (isMounted) {
           setCourse(data);
@@ -53,18 +58,18 @@ export default function CourseOverviewPage() {
     }
 
     return () => { isMounted = false; };
-  }, [courseId, activeCourse, setActiveCourse]);
+  }, [courseId, setActiveCourse]);
 
-  if (loading) {
+  if (loading && !currentCourse) {
     return (
       <div className="page-loader-container">
-        <Loader2 className="spinner" size={32} />
+        <Loader2 className="spinner" size={32} style={{ color: 'var(--accent-color)' }}/>
         <p>Loading course syllabus...</p>
       </div>
     );
   }
 
-  if (!course) {
+  if (!currentCourse) {
     return (
       <div className="page-error-container">
         <AlertCircle size={36} className="text-red" />
@@ -78,27 +83,27 @@ export default function CourseOverviewPage() {
   }
 
   // Find the first available lesson to offer a "Start Course" CTA
-  const firstLessonId = getId(course.modules?.[0]?.lessons?.[0]);
+  const firstLessonId = getId(currentCourse.modules?.[0]?.lessons?.[0]);
 
   return (
     <div className="course-overview-container">
       {/* Navigation Breadcrumb */}
       <div className="page-breadcrumbs">
-        <button onClick={() => navigate('/')} className="crumb-link">Home</button>
+        <button onClick={onNewCourse} className="crumb-link">Home</button>
         <ChevronRight size={14} />
-        <span className="crumb-current">{course.title}</span>
+        <span className="crumb-current">{currentCourse.title}</span>
       </div>
 
       {/* Course Header Banner */}
       <header className="course-hero-card">
         <div className="course-meta-tags">
           <span className="syllabus-badge">Syllabus</span>
-          {course.tags?.map((t, idx) => (
+          {currentCourse.tags?.map((t, idx) => (
             <span key={idx} className="course-tag-pill">{t}</span>
           ))}
         </div>
-        <h1 className="course-hero-title">{course.title}</h1>
-        <p className="course-hero-description">{course.description}</p>
+        <h1 className="course-hero-title">{currentCourse.title}</h1>
+        <p className="course-hero-description">{currentCourse.description}</p>
 
         {firstLessonId && (
           <div className="course-hero-actions">
@@ -118,7 +123,7 @@ export default function CourseOverviewPage() {
         <h2 className="section-title">Course Modules & Breakdown</h2>
 
         <div className="modules-list">
-          {course.modules?.map((mod, modIdx) => {
+          {currentCourse.modules?.map((mod, modIdx) => {
             const modTitle = typeof mod === 'object' && mod.title ? mod.title : `Module ${modIdx + 1}`;
             const lessons = typeof mod === 'object' && mod.lessons ? mod.lessons : [];
 

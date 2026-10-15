@@ -38,20 +38,3 @@
 .prompt-bar-wrapper > * {
   pointer-events: auto;
 }
-
-/* --- Global Loading Bar --- */
-.global-loading-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
-  z-index: 9999;
-  animation: loadingSlide 1.2s infinite linear;
-}
-
-@keyframes loadingSlide {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}

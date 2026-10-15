@@ -8,7 +8,13 @@ export default function ChatInput() {
   const [topic, setTopic] = useState('');
   const location = useLocation();
 
-  const { onGenerateCourse, isGenerating, generationStatus, activeCourse } = useCourse();
+  const {
+    onGenerateCourse,
+    isGenerating,
+    generationStatus,
+    activeCourse,
+    onStopGeneration,
+  } = useCourse();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,7 +40,17 @@ export default function ChatInput() {
       {generationStatus && (
         <div className={`queue-status-bar ${generationStatus.isComplete ? 'completed' : ''}`}>
           {!generationStatus.isComplete && <div className="queue-spinner"></div>}
-          <span>{generationStatus.text}</span>
+          <span className="queue-status-text">{generationStatus.text}</span>
+          {!generationStatus.isComplete && onStopGeneration && (
+            <button
+              type="button"
+              className="queue-stop-btn"
+              onClick={onStopGeneration}
+              title="Stop generating remaining lessons"
+            >
+              Stop
+            </button>
+          )}
         </div>
       )}
 

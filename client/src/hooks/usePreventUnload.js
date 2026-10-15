@@ -9,6 +9,14 @@ export default function usePreventUnload(isWorkInProgress, abortControllerRef, a
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       if (isWorkInProgress) {
+        event.preventDefault();
+        event.returnValue = '';
+        return '';
+      }
+    };
+
+    const handlePageHide = () => {
+      if (isWorkInProgress) {
         if (abortControllerRef?.current) {
           abortControllerRef.current.abort();
         }
@@ -24,19 +32,17 @@ export default function usePreventUnload(isWorkInProgress, abortControllerRef, a
             }).catch(() => {});
           }
         }
-
-        event.preventDefault();
-        event.returnValue = '';
-        return '';
       }
     };
 
     if (isWorkInProgress) {
       window.addEventListener('beforeunload', handleBeforeUnload);
+      window.addEventListener('pagehide', handlePageHide);
     }
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
     };
   }, [isWorkInProgress, abortControllerRef, activeCourseId]);
 }

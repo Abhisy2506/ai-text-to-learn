@@ -1,0 +1,116 @@
+.unsaved-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--shadow-color);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: unsavedModalFadeIn 0.2s ease-out;
+}
+
+.unsaved-modal-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 25px var(--shadow-color);
+  animation: unsavedModalScaleUp 0.2s ease-out;
+}
+
+.unsaved-modal-icon-wrapper {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background-color: var(--warning-bg, rgba(255, 183, 77, 0.12));
+  border: 1px solid var(--warning-border, rgba(255, 183, 77, 0.35));
+  color: var(--warning-text, #ffb74d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.1rem auto;
+}
+
+.unsaved-modal-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.unsaved-modal-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.unsaved-modal-description {
+  margin: 0 0 1.35rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.unsaved-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.unsaved-modal-btn {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unsaved-modal-btn-cancel {
+  background-color: var(--bg-subcard);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.unsaved-modal-btn-cancel:hover {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-focus);
+  color: var(--text-primary);
+}
+
+.unsaved-modal-btn-confirm {
+  background-color: var(--accent-color);
+  border: 1px solid transparent;
+  color: var(--accent-text);
+  font-weight: 600;
+  box-shadow: 0 2px 8px var(--shadow-focus);
+}
+
+.unsaved-modal-btn-confirm:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--card-hover-border);
+}
+
+@keyframes unsavedModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes unsavedModalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+  }
+}
+

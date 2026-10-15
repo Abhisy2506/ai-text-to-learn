@@ -404,6 +404,10 @@
   color: var(--text-secondary);
 }
 
+.accent-spinner {
+  color: var(--accent-color);
+}
+
 .page-error-container h2 {
   color: var(--text-primary);
 }

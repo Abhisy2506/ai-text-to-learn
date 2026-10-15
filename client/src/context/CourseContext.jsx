@@ -6,6 +6,9 @@ import axios from 'axios';
 import courseRepository from '../services/courseRepository';
 import { getId } from '../utils/courseUtils';
 
+import LoginModal from '../components/ui/LoginModal';
+import UnsavedChangesModal from '../components/ui/UnsavedChangesModal';
+
 // Hooks
 import useNetworkStatus from '../hooks/useNetworkStatus';
 import useSessionState from '../hooks/useSessionState';
@@ -19,6 +22,10 @@ export function CourseProvider({ children }) {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
+  
   const abortControllerRef = useRef(null);
 
   const navigate = useNavigate();
@@ -39,6 +46,7 @@ export function CourseProvider({ children }) {
     generatingCourseId,
     setGeneratingCourseId,
     generationStatus,
+    stopEnrichment,
   } = useCourseEnrichment({
     activeCourse,
     setActiveCourse,
@@ -52,12 +60,13 @@ export function CourseProvider({ children }) {
   const isWorkInProgress = isGenerating || Boolean(generatingCourseId);
   usePreventUnload(isWorkInProgress, abortControllerRef, getId(activeCourse));
 
-  // Handlers
-  const handleSelectCourse = async (courseId) => {
+  // Execution helpers
+  const executeSelectCourse = async (courseId) => {
     try {
       setIsLoading(true);
       const courseData = await courseRepository.getCourse(courseId);
       setActiveCourse(courseData);
+      navigate(`/courses/${courseId}`);
     } catch (err) {
       console.error('Error loading course:', err);
     } finally {
@@ -65,7 +74,35 @@ export function CourseProvider({ children }) {
     }
   };
 
+  const executeNewCourse = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    setActiveCourse(null);
+    setActiveLesson(null);
+    setGeneratingCourseId(null);
+    navigate('/');
+  };
+
+  // Handlers
+  const handleSelectCourse = async (courseId) => {
+    if (getId(activeCourse) === courseId) return;
+
+    if (isWorkInProgress) {
+      setPendingAction(() => () => executeSelectCourse(courseId));
+      setShowUnsavedModal(true);
+      return;
+    }
+
+    executeSelectCourse(courseId);
+  };
+
   const handleGenerateCourse = async (topic) => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
+
     if (!isOnline) {
       alert('You are currently offline. Connect to the internet to generate new courses.');
       return;
@@ -92,7 +129,18 @@ export function CourseProvider({ children }) {
     } catch (err) {
       if (!axios.isCancel(err) && err.name !== 'CanceledError') {
         console.error('Failed to generate course:', err);
-        alert('Error generating course: ' + (err.response?.data?.message || err.message));
+
+        const isAuthError =
+          err.error === 'login_required' ||
+          err.message?.includes('Missing Refresh Token') ||
+          err.message?.includes('login required') ||
+          err.response?.status === 401;
+
+        if (isAuthError) {
+          setShowLoginModal(true);
+        } else {
+          alert('Error generating course: ' + (err.response?.data?.message || err.message));
+        }
       }
     } finally {
       setIsGenerating(false);
@@ -100,10 +148,29 @@ export function CourseProvider({ children }) {
   };
 
   const handleNewCourse = () => {
-    setActiveCourse(null);
-    setActiveLesson(null);
-    setGeneratingCourseId(null);
-    navigate('/');
+    if (isWorkInProgress) {
+      setPendingAction(() => () => executeNewCourse());
+      setShowUnsavedModal(true);
+      return;
+    }
+
+    executeNewCourse();
+  };
+
+  const handleConfirmLeave = () => {
+    setShowUnsavedModal(false);
+    if (isWorkInProgress) {
+      stopEnrichment(getId(activeCourse));
+    }
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
+  };
+
+  const handleCancelLeave = () => {
+    setShowUnsavedModal(false);
+    setPendingAction(null);
   };
 
   const handleDeleteCourse = async (courseId) => {
@@ -136,6 +203,11 @@ export function CourseProvider({ children }) {
     setGeneratingCourseId,
     generationStatus,
     isOnline,
+    showUnsavedModal,
+    onConfirmLeave: handleConfirmLeave,
+    onCancelLeave: handleCancelLeave,
+    onStopGeneration: stopEnrichment,
+    openLoginModal: () => setShowLoginModal(true),
     onSelectCourse: handleSelectCourse,
     onNewCourse: handleNewCourse,
     onGenerateCourse: handleGenerateCourse,
@@ -145,6 +217,11 @@ export function CourseProvider({ children }) {
   return (
     <CourseContext.Provider value={value}>
       {children}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
+      <UnsavedChangesModal />
     </CourseContext.Provider>
   );
 }

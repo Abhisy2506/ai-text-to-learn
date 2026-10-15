@@ -9,13 +9,10 @@ import LessonPage from './pages/LessonPage';
 // Context & Global Hooks
 import { CourseProvider } from './context/CourseContext';
 import useNetworkStatus from './hooks/useNetworkStatus';
-import useTheme from './hooks/useTheme';
 
 export default function App() {
   const { isLoading: isAuthLoading } = useAuth0();
   const { isOnline } = useNetworkStatus();
-  
-  useTheme();
 
   if (isAuthLoading && isOnline) {
     return (

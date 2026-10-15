@@ -63,15 +63,17 @@ export default function Sidebar({ isOpen }) {
   const handleCourseSelection = (courseId) => {
     if (onSelectCourse) {
       onSelectCourse(courseId);
+    } else {
+      navigate(`/courses/${courseId}`);
     }
-    navigate(`/courses/${courseId}`);
   };
 
   const handleCreateNewCourse = () => {
     if (onNewCourse) {
       onNewCourse();
+    } else {
+      navigate('/');
     }
-    navigate('/');
   };
 
   return (
@@ -80,7 +82,7 @@ export default function Sidebar({ isOpen }) {
         <div className="sidebar-header">
           <div
             className="brand-logo"
-            onClick={() => navigate('/')}
+            onClick={handleCreateNewCourse}
             style={{ cursor: 'pointer' }}
           >
             <img
