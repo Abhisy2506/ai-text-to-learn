@@ -16,7 +16,7 @@
 
 /* Code Block */
 .block-code-container {
-  background-color: var(--bg-color);
+  background-color: var(--bg-secondary);
   border: 1px solid var(--border-color, #30363d);
   border-radius: 8px;
   margin: 1.5rem 0;
@@ -27,7 +27,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--bg-color);
+  background-color: var(--bg-tertiary);
   padding: 8px 16px;
   border-bottom: 1px solid var(--border-color, #30363d);
 }
@@ -118,7 +118,7 @@
 
 /* MCQ Block */
 .block-mcq-container {
-  background-color: var(--bd-color);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color, #30363d);
   border-radius: 8px;
   padding: 1.5rem;
@@ -145,7 +145,7 @@
   width: 100%;
   text-align: left;
   padding: 12px 16px;
-  background-color: var(--bg-color);
+  background-color: var(--bg-secondary);
   border: 1px solid var(--border-color, #30363d);
   border-radius: 6px;
   color: var(--text-secondary);
@@ -185,8 +185,93 @@
   line-height: 1.5;
 }
 
+.block-paragraph.markdown-content {
+  line-height: 1.75;
+  color: var(--text-primary);
+}
+
+.block-paragraph.markdown-content h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  color: var(--heading-color, #58a6ff);
+}
+
+.block-paragraph.markdown-content h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+  color: var(--subheading-color, #79c0ff);
+}
+
+.block-paragraph.markdown-content p {
+  margin-bottom: 0.5rem;
+}
+
+.block-paragraph.markdown-content ul {
+  color: var(--text-primary);
+  list-style-type: disc;
+  margin-left: 1.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.block-paragraph.markdown-content ol {
+  list-style-type: decimal;
+  color: var(--text-primary);
+  margin-left: 1.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.block-paragraph.markdown-content li {
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+  padding-left: 0.25rem;
+}
+
+.block-paragraph.markdown-content strong {
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+}
+
+.block-paragraph.markdown-content blockquote p {
+  margin: 0;
+}
+
+.block-paragraph.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+  overflow-x: auto;
+  display: block;
+}
+
+.block-paragraph.markdown-content th,
+.block-paragraph.markdown-content td {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color, #30363d);
+  text-align: left;
+}
+
+.block-paragraph.markdown-content th {
+  background-color: var(--bg-secondary, #161b22);
+  font-weight: 600;
+  color: var(--heading-color, #58a6ff);
+}
+
+.block-paragraph.markdown-content tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.block-paragraph.markdown-content tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+
 /* Helpers */
 .text-green { color: #2ea043; }
 .text-red { color: #f85149; }
-.spinner { animation: spin 1s linear infinite; }
-@keyframes spin { 100% { transform: rotate(360deg); } }

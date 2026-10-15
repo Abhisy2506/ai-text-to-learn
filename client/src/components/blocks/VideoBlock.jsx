@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { PlaySquare, Loader2, WifiOff } from 'lucide-react';
-import api from '../../services/api';
 import useNetworkStatus from '../../hooks/useNetworkStatus';
 import './blocks.css';
 
@@ -44,35 +43,9 @@ export default function VideoBlock({ block }) {
         }
       }
 
-      if (!isOnline) {
-        if (isMounted) setIsLoading(false);
-        return;
-      }
-
-      const query = block?.query || block?.text;
-      if (!query) {
-        if (isMounted) {
-          setHasError(true);
-          setIsLoading(false);
-        }
-        return;
-      }
-
-      try {
-        const res = await api.get(`/youtube?query=${encodeURIComponent(query)}`);
-        const fetchedId = res.data?.videoId || res.data?.data?.videoId;
-
-        if (isMounted && fetchedId) {
-          setVideoId(fetchedId);
-        } else if (isMounted) {
-          setHasError(true);
-        }
-      } catch (err) {
-        console.error('Failed to fetch YouTube video fallback:', err);
-        if (isMounted) setHasError(true);
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
+      if (!isMounted) return;
+      setHasError(true);
+      setIsLoading(false);
     };
 
     resolveVideo();

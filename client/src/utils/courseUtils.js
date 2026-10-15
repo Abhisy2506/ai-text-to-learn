@@ -4,7 +4,6 @@
 
 /**
  * Normalizes MongoDB ObjectId representation.
- * Handles both plain string/ObjectId and Mongo extended JSON format ({ $oid: '...' }).
  */
 export function getId(item) {
   if (!item) return null;

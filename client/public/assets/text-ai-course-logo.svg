@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="learnAiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f6feb"/>
+      <stop offset="100%" stop-color="#8a2be2"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Modern Rounded Background -->
+  <rect width="120" height="120" rx="28" fill="url(#learnAiGrad)"/>
+  
+  <!-- Left Page of the Book -->
+  <path d="M60 88 L32 78 V36 L60 46 Z" fill="rgba(255,255,255,0.9)"/>
+  
+  <!-- Right Page of the Book -->
+  <path d="M60 88 L88 78 V36 L60 46 Z" fill="rgba(255,255,255,0.7)"/>
+  
+  <!-- AI Sparkle (Floating above the book) -->
+  <path d="M60 16 L63 27 L74 30 L63 33 L60 44 L57 33 L46 30 L57 27 Z" fill="#ffffff"/>
+</svg>
