@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['assets/text-ai-course-logo.svg', 'favicon.ico'],
+      includeAssets: ['favicon.ico'],
       manifest: {
         name: 'Eudemus AI - Ai Course Generator',
         short_name: 'EudemusAI',
