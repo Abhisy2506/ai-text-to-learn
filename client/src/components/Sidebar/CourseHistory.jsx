@@ -1,4 +1,5 @@
 import { Book, MoreVertical } from 'lucide-react';
+import { getId, sortCoursesByDate } from '../../utils/courseUtils';
 
 export default function CourseHistory({
   courses = [],
@@ -11,19 +12,13 @@ export default function CourseHistory({
     return <div className="no-history-text">No courses generated yet.</div>;
   }
 
-  // Sort newest created courses at the top
-  const sortedCourses = [...courses].sort((a, b) => {
-    const dateA = new Date(a.createdAt?.$date || a.createdAt || 0);
-    const dateB = new Date(b.createdAt?.$date || b.createdAt || 0);
-    return dateB - dateA;
-  });
+  const sortedCourses = sortCoursesByDate(courses);
 
   return (
     <ul className="course-list">
       {sortedCourses.map((course) => {
-        const id = course._id?.$oid || course._id;
-        const activeId = activeCourseId?.$oid || activeCourseId;
-        const isActive = activeId === id;
+        const id = getId(course);
+        const isActive = getId(activeCourseId) === id;
         const isDropdownOpen = dropdownId === id;
 
         return (

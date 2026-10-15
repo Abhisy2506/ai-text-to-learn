@@ -1,21 +1,27 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Trash2 } from 'lucide-react';
 import CourseHistory from './CourseHistory';
 import DeleteCourse from './DeleteCourse';
+import NewCourseBtn from './NewCourseBtn';
+import { useCourse } from '../../context/CourseContext';
+import { getId } from '../../utils/courseUtils';
 import './sidebar.css';
 
-export default function Sidebar({
-  isOpen,
-  courses,
-  activeCourseId,
-  onSelectCourse,
-  onNewCourse,
-  onDeleteCourse,
-}) {
+export default function Sidebar({ isOpen }) {
   const [dropdown, setDropdown] = useState({ id: null, top: 0, left: 0 });
   const [courseToDelete, setCourseToDelete] = useState(null);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+
+  const {
+    courses,
+    activeCourse,
+    onSelectCourse,
+    onNewCourse,
+    onDeleteCourse,
+  } = useCourse();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -54,15 +60,28 @@ export default function Sidebar({
     }
   };
 
+  const handleCourseSelection = (courseId) => {
+    if (onSelectCourse) {
+      onSelectCourse(courseId);
+    }
+    navigate(`/courses/${courseId}`);
+  };
+
+  const handleCreateNewCourse = () => {
+    if (onNewCourse) {
+      onNewCourse();
+    }
+    navigate('/');
+  };
+
   return (
     <>
       <aside className={`sidebar-drawer ${isOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
           <div
             className="brand-logo"
-            onClick={() => {
-              window.location.href = '/';
-            }}
+            onClick={() => navigate('/')}
+            style={{ cursor: 'pointer' }}
           >
             <img
               src="/assets/text-ai-course-logo.svg"
@@ -84,9 +103,7 @@ export default function Sidebar({
         </div>
 
         <div className="sidebar-action">
-          <button className="new-course-btn" onClick={onNewCourse}>
-            <Plus size={16} /> New Course
-          </button>
+          <NewCourseBtn onClick={handleCreateNewCourse} />
         </div>
 
         <div className="sidebar-content">
@@ -94,9 +111,9 @@ export default function Sidebar({
 
           <CourseHistory
             courses={courses}
-            activeCourseId={activeCourseId}
+            activeCourseId={getId(activeCourse)}
             dropdownId={dropdown.id}
-            onSelectCourse={onSelectCourse}
+            onSelectCourse={handleCourseSelection}
             onToggleMenu={handleToggleMenu}
           />
 
@@ -118,7 +135,12 @@ export default function Sidebar({
             )}
         </div>
 
-        <div className="sidebar-footer">Eudemus AI can make mistakes</div>
+        <div className="sidebar-footer">
+          <p> © Built and Managed by</p>
+          <a href='https://github.com/Abhisy2506/ai-text-to-learn'>
+            Abhay Singh Yadav
+          </a>
+          </div>
       </aside>
 
       <DeleteCourse

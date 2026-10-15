@@ -1,14 +1,19 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ArrowUp, Loader2 } from 'lucide-react';
+import { useCourse } from '../../context/CourseContext';
 import './promptbar.css';
 
-export default function ChatInput({ onSendPrompt, isLoading, placeholder, generationStatus }) {
+export default function ChatInput() {
   const [topic, setTopic] = useState('');
+  const location = useLocation();
+
+  const { onGenerateCourse, isGenerating, generationStatus, activeCourse } = useCourse();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!topic.trim() || isLoading) return;
-    onSendPrompt(topic.trim());
+    if (!topic.trim() || isGenerating) return;
+    onGenerateCourse(topic.trim());
     setTopic('');
   };
 
@@ -18,6 +23,11 @@ export default function ChatInput({ onSendPrompt, isLoading, placeholder, genera
       handleSubmit(e);
     }
   };
+
+  const computedPlaceholder =
+    location.pathname !== '/' && activeCourse
+      ? 'Ask a question or enter a new course topic...'
+      : 'Enter a topic (e.g., "Full-Stack GraphQL with Node.js")...';
 
   return (
     <div className="chat-input-container">
@@ -35,17 +45,18 @@ export default function ChatInput({ onSendPrompt, isLoading, placeholder, genera
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          disabled={isLoading}
+          placeholder={computedPlaceholder}
+          disabled={isGenerating}
         />
         <button
           type="submit"
           className="chat-submit-btn"
-          disabled={!topic.trim() || isLoading}
+          disabled={!topic.trim() || isGenerating}
         >
-          {isLoading ? <Loader2 size={18} className="spinner" /> : <ArrowUp size={18} />}
+          {isGenerating ? <Loader2 size={18} className="spinner" /> : <ArrowUp size={18} />}
         </button>
       </form>
+      <p className='ai-warning'>Eudemus is AI and can make mistakes.</p>
     </div>
   );
 }

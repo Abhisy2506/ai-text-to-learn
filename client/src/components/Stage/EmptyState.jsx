@@ -1,32 +1,26 @@
-import { AlertCircle, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useCourse } from '../../context/CourseContext';
 import './stage.css';
 
-export default function EmptyState({ isLoading, isGenerating, isGenerationStopped }) {
+export default function EmptyState() {
   const { user } = useAuth0();
-  const firstName = user?.given_name || user?.name?.split(' ')[0] || 'Learner';
+  const { isLoading, isGenerating } = useCourse();
 
-  //if the genration get stopped by user
-  if (isGenerationStopped) {
-    return (
-      <div className="empty-stage">
-        <div className="stopped-response-banner">
-          <AlertCircle size={28} className="stopped-icon" />
-          <h3 className="stopped-title">You stopped the response</h3>
-          <p className="stopped-subtitle">
-            Course and lesson generation was halted because the page was refreshed or left.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const firstName =
+    user?.given_name ||
+    user?.name?.split(' ')[0] ||
+    user?.nickname ||
+    'Learner';
 
-  // if ai coruse is genrating
+  // 1. Initial syllabus outline is drafting
   if (isGenerating) {
     return (
       <div className="empty-stage">
         <h2 className="hero-title">Drafting Course Syllabus...</h2>
-        <p className="hero-description">Eudemus AI is analyzing your topic and building a structured learning path.</p>
+        <p className="hero-description">
+          Eudemus AI is analyzing your topic and building a structured learning path.
+        </p>
         <div className="typing-indicator">
           <span></span>
           <span></span>
@@ -36,27 +30,31 @@ export default function EmptyState({ isLoading, isGenerating, isGenerationStoppe
     );
   }
 
-  // 3. Data Fetcing Spinner
+  // 2. Course list fetching
   if (isLoading) {
     return (
       <div className="empty-stage">
-        <div className="queue-spinner" style={{ width: '32px', height: '32px', borderWidth: '3px' }}></div>
+        <div
+          className="queue-spinner"
+          style={{ width: '32px', height: '32px', borderWidth: '3px' }}
+        />
       </div>
     );
   }
 
-  // 4. Default Landing View case
+  // 3. Welcome / zero-course landing
   return (
     <div className="empty-stage">
       <div className="hero-icon-bubble">
         <Sparkles size={28} />
       </div>
-      
-      <h2 className="hero-title" style={{ fontFamily: "Caveat, cursive", fontSize: "35px", fontWeight: "700" }}>
+
+      <h2 className="hero-title cursive">
         Welcome, {firstName}!
       </h2>
       <p className="hero-description">
-        What would you like to learn today? Enter any topic below, and our <strong>Eudemus AI</strong> will generate a complete, structured course for you in seconds.
+        What would you like to learn today? Enter any topic below, and our{' '}
+        <strong>Eudemus AI</strong> will generate a complete, structured course for you in seconds.
       </p>
     </div>
   );
