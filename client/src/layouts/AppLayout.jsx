@@ -1,104 +1,65 @@
 import { useState } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar/Sidebar';
 import Header from '../components/Header/Header';
 import ChatInput from '../components/PromptBar/ChatInput';
 import OfflineBanner from '../components/ui/OfflineBanner';
+import { useCourse } from '../context/CourseContext';
+import { getId } from '../utils/courseUtils';
 import './layout.css';
 
-export default function AppLayout({
-  courses = [],
-  activeCourse,
-  activeLesson,
-  isLoading,
-  isGenerating,
-  isGenerationStopped,
-  generationStatus,
-  onSelectCourse,
-  onSelectLesson,
-  onNewCourse,
-  onGenerateCourse,
-  onDeleteCourse,
-  isOnline
-}) {
+export default function AppLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const navigate = useNavigate();
   const location = useLocation();
 
-  const handleCourseClick = (courseId) => {
-    if (onSelectCourse) {
-      onSelectCourse(courseId);
-    }
-    navigate(`/courses/${courseId}`);
-  };
+  const { 
+    isLoading, 
+    isGenerating, 
+    isOnline,
+    generatingCourseId,
+    activeCourse,
+    generationStatus 
+  } = useCourse();
 
-  // Route-aware new course/home reset
-  const handleNewCourseClick = () => {
-    if (onNewCourse) {
-      onNewCourse();
-    }
-    navigate('/');
-  };
+  // 1. Are we on the Home Page?
+  const isHomePage = location.pathname === '/';
+
+  // 2. Is this specific course currently running background generation?
+  const isActivelyEnriching = Boolean(
+    generatingCourseId && 
+    generatingCourseId === getId(activeCourse)
+  );
+
+  // 3. Hide ChatInput
+  const hideChatInput = !isHomePage && (!isActivelyEnriching || generationStatus?.isComplete);
 
   return (
     <div className={`app-container ${isSidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`}>
-      {/* Persistent Navigation Sidebar */}
-      <Sidebar
-        isOpen={isSidebarOpen}
-        courses={courses}
-        activeCourseId={activeCourse?._id}
-        onSelectCourse={handleCourseClick}
-        onNewCourse={handleNewCourseClick}
-        onDeleteCourse={onDeleteCourse}
-      />
+      <Sidebar isOpen={isSidebarOpen} />
 
       <div className="main-viewport">
-        {/* Offline indicator banner */}
         <OfflineBanner isOnline={isOnline} />
 
-        {/* Global Loading Bar */}
-        {isLoading && !isGenerating && !isGenerationStopped && (
-          <div className="global-loading-bar"></div>
+        {/* Global Loading Bar - removed isGenerationStopped check */}
+        {isLoading && !isGenerating && (
+          <div className="global-loading-bar" />
         )}
 
-        {/* Persistent Top Navigation Bar */}
         <Header
           isSidebarOpen={isSidebarOpen}
           onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
-          activeCourseTitle={activeCourse?.title}
         />
 
-        {/* Dynamic Route Viewport */}
         <main className="content-stage">
-          <Outlet
-            context={{
-              courses,
-              activeCourse,
-              activeLesson,
-              isLoading,
-              isGenerating,
-              isGenerationStopped,
-              generationStatus,
-              isOnline,
-              onSelectLesson,
-              onGenerateCourse
-            }}
-          />
+          <Outlet />
         </main>
 
-        {/* Persistent Topic Prompt Bar */}
-        <div className="prompt-bar-wrapper">
-          <ChatInput
-            onSendPrompt={onGenerateCourse}
-            isLoading={isGenerating}
-            placeholder={
-              location.pathname !== '/' && activeCourse
-                ? 'Ask a question or enter a new course topic...'
-                : 'Enter a topic (e.g., "Full-Stack GraphQL with Node.js")...'
-            }
-            generationStatus={generationStatus}
-          />
-        </div>
+        {/* ChatInput appears on Home Page OR during active course enrichment */}
+        {!hideChatInput && (
+          <div className="prompt-bar-wrapper">
+            <ChatInput />
+          </div>
+        )}
       </div>
     </div>
   );

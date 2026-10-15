@@ -1,6 +1,19 @@
 import api from './api';
 
 const courseRepository = {
+  // Generate a new course syllabus
+  async generateCourse(topic, token, signal) {
+    const res = await api.post(
+      '/courses/generate',
+      { topic },
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        signal,
+      }
+    );
+    return res.data?.data || res.data;
+  },
+
   // Fetch single course
   async getCourse(courseId) {
     const res = await api.get(`/courses/${courseId}`);
@@ -17,6 +30,16 @@ const courseRepository = {
   async enrichLesson(lessonId, token) {
     const res = await api.post(
       `/lessons/${lessonId}/enrich`,
+      {},
+      token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+    );
+    return res.data?.data || res.data;
+  },
+
+  // Mark all un-enriched lessons in a course as stopped (batch stop)
+  async stopCourseLessons(courseId, token) {
+    const res = await api.patch(
+      `/lessons/course/${courseId}/stop`,
       {},
       token ? { headers: { Authorization: `Bearer ${token}` } } : {}
     );

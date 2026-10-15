@@ -17,7 +17,9 @@ export default function useCourseEnrichment({
 
   // Calculate real-time generation progress when this course is being enriched
   let generationStatus = null;
-  if (activeCourse?.modules && activeCourse._id === generatingCourseId) {
+  const activeCourseId = getId(activeCourse);
+
+  if (activeCourse?.modules && activeCourseId === generatingCourseId) {
     let totalLessons = 0;
     let completedLessons = 0;
     let currentWorkingModule = null;
@@ -67,7 +69,7 @@ export default function useCourseEnrichment({
 
     const runAutoEnrichment = async () => {
       if (!isOnline || !activeCourse || !isAuthenticated) return;
-      if (generatingCourseId !== activeCourse._id) return;
+      if (generatingCourseId !== activeCourseId) return;
 
       // Find the first un-enriched lesson in the active course
       let targetLessonId = null;
@@ -75,7 +77,7 @@ export default function useCourseEnrichment({
         for (const les of mod.lessons || []) {
           const isEnriched = typeof les === 'object' && les !== null ? les.isEnriched : false;
           if (!isEnriched) {
-            targetLessonId = typeof les === 'object' && les !== null ? les._id : les;
+            targetLessonId = getId(les);
             break;
           }
         }
@@ -92,7 +94,7 @@ export default function useCourseEnrichment({
 
         // Immutably update active course lessons in state
         setActiveCourse((prevCourse) => {
-          if (!prevCourse || prevCourse._id !== activeCourse._id) return prevCourse;
+          if (!prevCourse || getId(prevCourse) !== activeCourseId) return prevCourse;
           const updatedModules = prevCourse.modules.map((mod) => ({
             ...mod,
             lessons: (mod.lessons || []).map((les) => {
@@ -124,7 +126,7 @@ export default function useCourseEnrichment({
 
           // Mark remaining un-enriched lessons in state as stopped
           setActiveCourse((prevCourse) => {
-            if (!prevCourse || prevCourse._id !== activeCourse._id) return prevCourse;
+            if (!prevCourse || getId(prevCourse) !== activeCourseId) return prevCourse;
             const updatedModules = prevCourse.modules.map((mod) => ({
               ...mod,
               lessons: (mod.lessons || []).map((les) => {
@@ -140,9 +142,9 @@ export default function useCourseEnrichment({
           });
 
           // Notify backend to mark remaining lessons as stopped in the database
-          if (activeCourse?._id) {
+          if (activeCourseId) {
             const token = await getAccessTokenSilently().catch(() => null);
-            courseRepository.stopCourseLessons(activeCourse._id, token).catch(() => {});
+            courseRepository.stopCourseLessons(activeCourseId, token).catch(() => {});
           }
         }
       }
@@ -159,6 +161,7 @@ export default function useCourseEnrichment({
     };
   }, [
     activeCourse,
+    activeCourseId,
     isAuthenticated,
     generatingCourseId,
     isOnline,

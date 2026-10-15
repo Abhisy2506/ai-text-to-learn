@@ -21,7 +21,6 @@ export default function useUserSync({
             name: user.name || '',
             picture: user.picture || '',
           });
-          console.log('User synced to MongoDB');
         } catch (error) {
           console.error('Failed to sync user:', error);
         }
