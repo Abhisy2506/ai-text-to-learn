@@ -1,0 +1,22 @@
+{
+  "name": "eudemusai-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Root workspace runner for LearnAI client and server",
+  "type": "module",
+  "scripts": {
+    "install:all": "npl m instal&& npm install --prefix client && npm install --prefix server",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "start": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run start:server\" \"npm run start:client\"",
+    "start:server": "npm run start --prefix server",
+    "start:client": "npm run preview --prefix client",
+    "build": "npm run build --prefix client",
+    "lint": "npm run lint --prefix client",
+    "test": "npm test --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
