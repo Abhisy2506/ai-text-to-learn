@@ -5,7 +5,7 @@
   "description": "Root workspace runner for LearnAI client and server",
   "type": "module",
   "scripts": {
-    "install:all": "npl m instal&& npm install --prefix client && npm install --prefix server",
+    "install:all": "npm install && npm install --prefix client && npm install --prefix server",
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "npm run dev --prefix server",
     "dev:client": "npm run dev --prefix client",
