@@ -5,7 +5,8 @@ import {
   getLessonsByModule,
   enrichLesson,
   markLessonStopped,
-  stopRemainingLessonsInCourse
+  stopRemainingLessonsInCourse,
+  getHinglishAudioExplanation,
 } from '../controllers/lessonController.js';
 
 const router = express.Router();
@@ -24,5 +25,8 @@ router.route('/:id/stop')
 router.route('/course/:courseId/stop')
   .post(stopRemainingLessonsInCourse)
   .patch(stopRemainingLessonsInCourse);
+
+//Hinglish text & Gemini TTS audio explanation endpoint
+router.post('/:lessonId/hinglish-audio', getHinglishAudioExplanation);
 
 export default router;
