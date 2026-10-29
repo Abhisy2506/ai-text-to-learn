@@ -42,6 +42,14 @@ const lessonSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    hinglishContent: {
+      type: String,
+      default: ""
+    },
+    audioData: {
+      type: String, // Base64 audio string
+      default: null
+    }
   },
   {
     timestamps: true,

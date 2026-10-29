@@ -1,9 +1,11 @@
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
 import { ApiError } from '../utils/ApiError.js';
+import * as googleTTS from 'google-tts-api';
 
 dotenv.config();
 
+// Groq Client for Course Outline & Lesson Generation
 const client = new OpenAI({
   apiKey: process.env.GROQ_API_KEY,
   baseURL: 'https://api.groq.com/openai/v1',
@@ -52,7 +54,7 @@ function cleanAndParseJSON(rawText) {
     const parsed = JSON.parse(repaired);
     return Array.isArray(parsed) ? parsed : (parsed.blocks || parsed.content || parsed);
   } catch (repairError) {
-    console.error(repairError)
+    console.error(repairError);
   }
 
   // 3. Third attempt: extract any completed block objects individually
@@ -63,7 +65,7 @@ function cleanAndParseJSON(rawText) {
     try {
       extractedBlocks.push(JSON.parse(match[0]));
     } catch {
-      console.log("individually unparseable fragment");
+      console.log('individually unparseable fragment');
     }
   }
 
@@ -197,5 +199,86 @@ export const generateLessonContent = async (courseTitle, lessonTitle, objectives
   } catch (error) {
     console.error('Groq Lesson Content Error:', error);
     throw new ApiError(500, `Failed to generate lesson content: ${error.message}`);
+  }
+};
+
+/**
+ * Translates lesson content into conversational Hinglish using Groq
+ * @param {string} lessonContentText - Extracted text of lesson blocks
+ * @returns {Promise<string>} - Friendly Hinglish explanation
+ */
+export const translateToHinglish = async (lessonContentText) => {
+  const prompt = `
+    You are an expert tutor explaining technical concepts to Indian college students.
+    Translate and summarize the following English lesson content into natural, conversational Hinglish (Hindi written in Roman/Latin script, keeping technical terms like 'component', 'state', 'API', 'function' in English).
+
+    Requirements:
+    - Keep it engaging, direct, and concise (ideal for an audio script).
+    - Do NOT include markdown code blocks, URLs, or markdown formatting tags.
+    - Write it strictly as readable text that can be spoken directly by a Text-to-Speech model.
+
+    Content to explain:
+    ${lessonContentText}
+  `;
+
+  try {
+    return await callGroqWithRetry(async () => {
+      const response = await client.chat.completions.create({
+        model: MODEL_NAME,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an educational tutor that outputs clean spoken conversational Hinglish without markdown fences or headers.',
+          },
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 1500,
+      });
+
+      return response.choices[0].message.content.trim();
+    });
+  } catch (error) {
+    console.error('Hinglish Translation Error:', error);
+    throw new ApiError(500, `Failed to translate lesson to Hinglish: ${error.message}`);
+  }
+};
+
+/**
+ * Synthesizes Hinglish text into a base64 MP3 audio string.
+ * Uses 'hi-IN' (Hindi) so Romanized Hinglish is pronounced naturally.
+ * @param {string} text - The Hinglish text to synthesize
+ * @returns {Promise<string>} - Base64 encoded audio string
+ */
+export const generateAudioFromText = async (text) => {
+  try {
+    // Clean text to avoid special characters breaking TTS
+    const cleanedText = text
+      .replace(/[*_#`~]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // getAllAudioBase64 handles long text by chunking and returning an array of base64 strings
+    const audioResults = await googleTTS.getAllAudioBase64(cleanedText, {
+      lang: 'hi', // 'hi' provides the natural Indian accent for Hinglish
+      slow: false,
+      host: 'https://translate.google.com',
+      timeout: 10000,
+    });
+
+    if (!audioResults || audioResults.length === 0) {
+      throw new Error('No audio returned by TTS service');
+    }
+
+    // Combine chunks into a single audio buffer
+    const audioBuffers = audioResults.map((chunk) =>
+      Buffer.from(chunk.base64, 'base64')
+    );
+    const combinedBuffer = Buffer.concat(audioBuffers);
+
+    return combinedBuffer.toString('base64');
+  } catch (error) {
+    console.error('TTS Audio Generation Error:', error);
+    throw new ApiError(500, `Failed to generate audio explanation: ${error.message}`);
   }
 };
