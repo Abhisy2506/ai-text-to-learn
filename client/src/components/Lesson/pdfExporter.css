@@ -321,3 +321,124 @@
   margin-top: 10px;
   margin-bottom: 0;
 }
+
+/* Lesson Audio Player CSS */
+
+.audio-player-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audio-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--bg-card, #0D1C22);
+  border: 1px solid var(--border-color, #1A343F);
+  color: var(--accent-blue, #38E1D3);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.audio-toggle-btn:hover:not(:disabled) {
+  border-color: var(--accent-blue, #38E1D3);
+  background-color: var(--bg-tertiary, #13272F);
+  box-shadow: 0 2px 8px var(--shadow-color, rgba(3, 10, 12, 0.3));
+}
+
+.audio-toggle-btn.playing {
+  background-color: rgba(56, 225, 211, 0.12);
+  border-color: var(--accent-blue, #38E1D3);
+  color: var(--accent-blue, #38E1D3);
+}
+
+.audio-toggle-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.audio-download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--bg-card, #0D1C22);
+  border: 1px solid var(--border-color, #1A343F);
+  color: var(--text-secondary, #8DAFB5);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.audio-download-btn:hover {
+  border-color: var(--accent-color, #FF6B57);
+  color: var(--accent-color, #FF6B57);
+  background-color: var(--bg-tertiary, #13272F);
+}
+
+.audio-btn-spinner {
+  animation: audioSpin 1s linear infinite;
+}
+
+.audio-error-text {
+  font-size: 0.8rem;
+  color: var(--accent-color, #FF6B57);
+  margin-left: 4px;
+}
+
+@keyframes audioSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hinglish Explanation Card in Lesson View */
+.hinglish-explanation-card {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-card, #0D1C22);
+  border: 1px solid var(--border-color, #1A343F);
+  border-left: 4px solid var(--accent-color, #FF6B57);
+  border-radius: var(--radius-md, 10px);
+  padding: 1.75rem 2rem;
+  margin-top: 1rem;
+  box-shadow: 0 4px 16px var(--shadow-color, rgba(3, 10, 12, 0.4));
+}
+
+.hinglish-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(255, 107, 87, 0.15);
+  color: var(--accent-color, #FF6B57);
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+}
+
+.hinglish-prose {
+  color: var(--text-primary, #F0FBF9);
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.hinglish-prose p {
+  margin-bottom: 1.25rem;
+}
+
+.hinglish-prose p:last-child {
+  margin-bottom: 0;
+}
