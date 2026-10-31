@@ -328,6 +328,14 @@
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.top-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .lesson-content-viewport {
@@ -427,4 +435,76 @@
 
 .back-btn:hover {
   border-color: var(--card-hover-border);
+}
+
+/* Language Toggle Button */
+.language-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--bg-card, #0D1C22);
+  border: 1px solid var(--border-color, #1A343F);
+  color: var(--text-secondary, #8DAFB5);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.language-toggle-btn:hover:not(:disabled) {
+  border-color: var(--accent-blue, #38E1D3);
+  color: var(--text-primary, #F0FBF9);
+  background-color: var(--bg-tertiary, #13272F);
+}
+
+.language-toggle-btn.active {
+  background-color: rgba(56, 225, 211, 0.15);
+  border-color: var(--accent-blue, #38E1D3);
+  color: var(--accent-blue, #38E1D3);
+}
+
+.language-toggle-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+/* Hinglish Text Display Card */
+.hinglish-explanation-card {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-card, #0D1C22);
+  border: 1px solid var(--border-color, #1A343F);
+  border-left: 4px solid var(--accent-color, #FF6B57);
+  border-radius: var(--radius-md, 10px);
+  padding: 1.75rem 2rem;
+  margin-top: 1rem;
+  box-shadow: 0 4px 16px var(--shadow-color, rgba(3, 10, 12, 0.4));
+}
+
+.hinglish-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(255, 107, 87, 0.15);
+  color: var(--accent-color, #FF6B57);
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+}
+
+.hinglish-prose {
+  color: var(--text-primary, #F0FBF9);
+  font-size: 1.05rem;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+.hinglish-prose p {
+  margin-bottom: 1.2rem;
 }

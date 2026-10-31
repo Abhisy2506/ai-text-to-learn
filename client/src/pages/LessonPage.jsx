@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, AlertCircle, Loader2, Languages } from 'lucide-react';
+import { useAuth0 } from '@auth0/auth0-react';
 import courseRepository from '../services/courseRepository';
 import LessonRenderer from '../components/Lesson/LessonRenderer';
 import LessonPDFExporter from '../components/Lesson/LessonPDFExporter';
+import LessonAudioPlayer from '../components/Lesson/LessonAudioPlayer';
 import { useCourse } from '../context/CourseContext';
 import { getId, isLessonStopped } from '../utils/courseUtils';
 import './pages.css';
@@ -11,16 +13,18 @@ import './pages.css';
 export default function LessonPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
-  const { activeCourse, activeLesson, setActiveLesson } = useCourse();
+  const { activeCourse, activeLesson, setActiveLesson, isOnline } = useCourse();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   const [lesson, setLesson] = useState(null);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('english'); // 'english' or 'hinglish'
+  const [translating, setTranslating] = useState(false);
 
   const activeCourseRef = useRef(activeCourse);
   activeCourseRef.current = activeCourse;
 
-  // Keep in sync with background enrichment updates from CourseContext
   const currentLesson =
     activeLesson && getId(activeLesson) === lessonId
       ? activeLesson
@@ -28,6 +32,7 @@ export default function LessonPage() {
 
   useEffect(() => {
     let isMounted = true;
+    setViewMode('english'); // reset view mode when changing lessons
 
     const loadLessonDetails = async () => {
       try {
@@ -67,6 +72,45 @@ export default function LessonPage() {
       isMounted = false;
     };
   }, [lessonId, setActiveLesson]);
+
+  const handleToggleHinglish = async () => {
+    if (viewMode === 'hinglish') {
+      setViewMode('english');
+      return;
+    }
+
+    // If we already have the Hinglish text cached, just switch view
+    if (currentLesson?.hinglishContent) {
+      setViewMode('hinglish');
+      return;
+    }
+
+    if (!isOnline) {
+      alert('You are offline. Connect to the internet to get Hinglish translation.');
+      return;
+    }
+
+    // Otherwise, fetch/generate it via the existing backend endpoint
+    try {
+      setTranslating(true);
+      const token = isAuthenticated ? await getAccessTokenSilently() : null;
+      const data = await courseRepository.getLessonHinglishAudio(currentLesson._id, token);
+
+      if (data?.hinglishText) {
+        setActiveLesson((prev) => ({
+          ...prev,
+          hinglishContent: data.hinglishText,
+          audioData: data.audioBase64 || prev?.audioData,
+        }));
+        setViewMode('hinglish');
+      }
+    } catch (err) {
+      console.error('Error translating to Hinglish:', err);
+      alert('Could not translate lesson to Hinglish. Please try again.');
+    } finally {
+      setTranslating(false);
+    }
+  };
 
   const displayCourse =
     activeCourse && (getId(activeCourse) === getId(course) || !course)
@@ -138,12 +182,29 @@ export default function LessonPage() {
         </button>
 
         <div className="top-actions-right">
+          {/* Hinglish Text Switcher Button */}
+          <button
+            type="button"
+            onClick={handleToggleHinglish}
+            disabled={translating}
+            className={`language-toggle-btn ${viewMode === 'hinglish' ? 'active' : ''}`}
+            title="Toggle between English and Hinglish explanation"
+          >
+            {translating ? (
+              <Loader2 size={16} className="audio-btn-spinner" />
+            ) : (
+              <Languages size={16} />
+            )}
+            <span>{viewMode === 'hinglish' ? 'Show English' : 'Read Hinglish'}</span>
+          </button>
+
+          <LessonAudioPlayer />
           <LessonPDFExporter lesson={effectiveLesson} />
         </div>
       </div>
 
       <main className="lesson-content-viewport">
-        <LessonRenderer lesson={effectiveLesson} />
+        <LessonRenderer lesson={effectiveLesson} viewMode={viewMode} />
       </main>
 
       <footer className="lesson-bottom-nav">
