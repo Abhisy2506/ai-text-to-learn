@@ -1,6 +1,10 @@
 import { Lesson } from '../models/lesson.module.js';
 import { Module } from '../models/module.model.js';
-import { generateLessonContent } from '../services/aiService.js';
+import {
+  generateLessonContent,
+  translateToHinglish,
+  generateAudioFromText,
+} from '../services/aiService.js';
 import { fetchRelatedVideo } from '../services/youtubeService.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
@@ -126,7 +130,6 @@ export const enrichLesson = asyncHandler(async (req, res) => {
     );
   } catch (error) {
     if (!clientDisconnected) {
-      // If generation crashes (e.g. Groq daily token limit hit or network timeout)
       lesson.isGenerationStopped = true;
       lesson.status = 'failed';
       await lesson.save().catch(() => {});
@@ -168,5 +171,62 @@ export const stopRemainingLessonsInCourse = asyncHandler(async (req, res) => {
 
   return res.status(200).json(
     new ApiResponse(200, result, 'Remaining lessons marked as stopped')
+  );
+});
+
+//Generate or fetch cached Hinglish explanation and TTS audio
+export const getHinglishAudioExplanation = asyncHandler(async (req, res) => {
+  const { lessonId } = req.params;
+  const { voiceName } = req.query;
+
+  const lesson = await Lesson.findById(lessonId);
+  if (!lesson) {
+    throw new ApiError(404, 'Lesson not found');
+  }
+
+  // 1. Return cached text and audio buffer if already generated
+  if (lesson.hinglishContent && lesson.audioData) {
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          hinglishText: lesson.hinglishContent,
+          audioBase64: lesson.audioData,
+        },
+        'Retrieved cached Hinglish audio explanation'
+      )
+    );
+  }
+
+  // 2. Extract plain text from the lesson's content blocks
+  const blocks = lesson.content || [];
+  const rawText = blocks
+    .filter((b) => b.type === 'heading' || b.type === 'paragraph')
+    .map((b) => b.text)
+    .filter(Boolean)
+    .join('\n\n');
+
+  const sourceText = rawText || lesson.title;
+
+  // 3. Translate to conversational Hinglish via Groq
+  const hinglishText = await translateToHinglish(sourceText);
+
+  // 4. Generate audio buffer via Gemini TTS
+  const audioBase64 = await generateAudioFromText(hinglishText, voiceName || 'Puck');
+
+  // 5. Cache results into MongoDB
+  lesson.hinglishContent = hinglishText;
+  lesson.audioData = audioBase64;
+  await lesson.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        hinglishText,
+        audioBase64,
+      },
+      'Generated Hinglish audio explanation successfully'
+    )
   );
 });

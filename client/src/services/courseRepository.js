@@ -53,7 +53,20 @@ const courseRepository = {
       token ? { headers: { Authorization: `Bearer ${token}` } } : {}
     );
     return res.data?.data || res.data;
-  }
+  },
+
+  // Milestone 10: Generate or fetch cached Hinglish explanation and audio
+  async getLessonHinglishAudio(lessonId, token, voiceName = 'Puck') {
+    const res = await api.post(
+      `/lessons/${lessonId}/hinglish-audio`,
+      {},
+      {
+        params: { voiceName },
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      }
+    );
+    return res.data?.data || res.data;
+  },
 };
 
 export default courseRepository;
