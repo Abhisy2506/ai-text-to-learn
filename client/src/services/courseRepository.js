@@ -55,7 +55,7 @@ const courseRepository = {
     return res.data?.data || res.data;
   },
 
-  // Milestone 10: Generate or fetch cached Hinglish explanation and audio
+  //Generate or fetch cached Hinglish explanation and audio
   async getLessonHinglishAudio(lessonId, token, voiceName = 'Puck') {
     const res = await api.post(
       `/lessons/${lessonId}/hinglish-audio`,

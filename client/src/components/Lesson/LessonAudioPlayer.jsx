@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, Pause, Loader2, Download } from 'lucide-react';
+import { Volume2, Pause, Loader2 } from 'lucide-react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCourse } from '../../context/CourseContext';
 import courseRepository from '../../services/courseRepository';
@@ -117,17 +117,6 @@ export default function LessonAudioPlayer() {
             : 'Explain in Hinglish'}
         </span>
       </button>
-
-      {audioUrl && (
-        <a
-          href={audioUrl}
-          download={`${activeLesson.title?.replace(/\s+/g, '_') || 'lesson'}_hinglish.wav`}
-          className="audio-download-btn"
-          title="Download Audio (.wav)"
-        >
-          <Download size={16} />
-        </a>
-      )}
 
       {error && <span className="audio-error-text">{error}</span>}
     </div>
